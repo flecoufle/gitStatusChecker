@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="status.css">
+    </head>
+    <body>
+        <div class="container" id="container1">
+            <label class="label" for="time-interval-input">Interval de rafraichissement (sec) :</label>
+            <input type="text" id="time-interval-input" class="time-interval-input" value="30">
+        </div>
+        <div class="container" id="container2">
+            <label class="label" for="path-input">Chemin :</label>
+            <input type="text" id="path-input" class="path-input" value="./">
+        </div>
+        <div class="container" id="container3">
+            <label class="status-label">Status :</label>
+            <div id="status" class="status"></div>
+        </div>
+        <script>require('./status')</script>
+    </body>
+</html>
