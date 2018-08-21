@@ -24,3 +24,6 @@ npm i electron-packager rimraf -D
 npm run build
 
 ## 6. Test the programm on all OS with Virtual box VMs.
+
+
+PR test
