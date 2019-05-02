@@ -11,10 +11,10 @@ let icons = {clean: 'clean.png', dirty: 'dirty.png', unknown: 'unknown.png'}
 app.on('ready', _ => {
     // Tray : Initialize tray
     tray = new Tray(path.join(iconPath, icons.unknown))
-    tray.setToolTip('Open settings')
+    tray.setToolTip('Change settings')
     tray.setContextMenu(Menu.buildFromTemplate([
-        { label: 'Show App', click: _ => mainWindow.show() },
-        { label: 'Quit', click: _ => { app.isQuiting = true; app.quit(); } }
+        { label: 'Show', click: _ => mainWindow.show() },
+        { label: 'Exit', click: _ => { app.isQuiting = true; app.quit(); } }
     ]))
     tray.on('click', _ => {
         if (mainWindow.isVisible())
