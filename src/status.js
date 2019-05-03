@@ -14,14 +14,87 @@ function isDir (dir) {
   }
 }
 
+electron.ipcRenderer.on('stageRequest', (event, message) => {
+  gitStage(document.getElementById('path-input').value)
+})
+
+electron.ipcRenderer.on('commitRequest', (event, message) => {
+  gitCommit(document.getElementById('path-input').value)
+})
+
+electron.ipcRenderer.on('commitPushRequest', (event, message) => {
+  gitCommit(document.getElementById('path-input').value)
+  gitPush(document.getElementById('path-input').value)
+})
+
+electron.ipcRenderer.on('pushRequest', (event, message) => {
+  gitPush(document.getElementById('path-input').value)
+})
+
+electron.ipcRenderer.on('stageCommitPushRequest', (event, message) => {
+  gitCommit(document.getElementById('path-input').value)
+})
+
+/* function getRepoName (dir) {
+  exec('basename `git rev-parse --show-toplevel`', {
+    cwd: dir
+  }, (err, stdout, stderr) => {
+    // Used to debug :
+    console.log('err', err)
+    console.log('stdout', stdout)
+    console.log('stderr', stderr)
+
+    return stdout
+  })
+} */
+
+function gitCommit (dir) {
+  exec('git commit -m "update"', {
+    cwd: dir
+  }, (err, stdout, stderr) => {
+    // Used to debug :
+    console.log('err', err)
+    console.log('stdout', stdout)
+    console.log('stderr', stderr)
+
+    return err
+  })
+}
+
+function gitStage (dir) {
+  exec('git add .', {
+    cwd: dir
+  }, (err, stdout, stderr) => {
+    // Used to debug :
+    console.log('err', err)
+    console.log('stdout', stdout)
+    console.log('stderr', stderr)
+
+    return err
+  })
+}
+
+function gitPush (dir) {
+  exec('git push', {
+    cwd: dir
+  }, (err, stdout, stderr) => {
+    // Used to debug :
+    console.log('err', err)
+    console.log('stdout', stdout)
+    console.log('stderr', stderr)
+
+    return err
+  })
+}
+
 function checkGitStatus (dir) {
   exec('git status', {
     cwd: dir
   }, (err, stdout, stderr) => {
     // Used to debug :
-    // console.log('err', err);
-    // console.log('stdout', stdout);
-    // console.log('stderr', stderr);
+    console.log('err', err)
+    console.log('stdout', stdout)
+    console.log('stderr', stderr)
 
     if (err) return setStatus('unknown')
 

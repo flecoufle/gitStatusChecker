@@ -16,6 +16,11 @@
             "type": "npm",
             "script": "install",
             "problemMatcher": []
+        },
+        {
+            "type": "npm",
+            "script": "test",
+            "problemMatcher": []
         }
     ]
 }

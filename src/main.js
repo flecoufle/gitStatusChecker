@@ -11,10 +11,20 @@ let icons = { clean: 'clean.png', dirty: 'dirty.png', unknown: 'unknown.png' }
 app.on('ready', _ => {
   // Tray : Initialize tray
   tray = new Tray(path.join(iconPath, icons.unknown))
-  tray.setToolTip('Git status')
+  tray.setToolTip('Git command')
   tray.setContextMenu(Menu.buildFromTemplate([
-    { label: 'Show', click: _ => mainWindow.show() },
-    { label: 'Exit', click: _ => { app.isQuiting = true; app.quit() } }
+    { label: 'Stage all changes',
+      click: _ => {
+        mainWindow.show()
+        mainWindow.webContents.send('stageRequest', 'A')
+      }
+    },
+    { label: 'Commit...', click: _ => mainWindow.webContents.send('commitRequest', 'B') },
+    { label: 'Commit+Push...', click: _ => mainWindow.webContents.send('commitPushRequest', 'C') },
+    { label: 'Push', click: _ => mainWindow.webContents.send('pushRequest', 'D') },
+    { label: 'Stage+Commit+Push...', click: _ => mainWindow.webContents.send('stageCommitPushRequest', 'E') },
+    { label: 'Config', click: _ => mainWindow.show() },
+    { label: 'Close', click: _ => { app.isQuiting = true; app.quit() } }
   ]))
   tray.on('click', _ => {
     if (mainWindow.isVisible()) {
@@ -27,8 +37,17 @@ app.on('ready', _ => {
   // MainWindow : Instanciate a new window and open it
   mainWindow = new BrowserWindow({
     height: 200,
-    width: 500
+    width: 500,
+    center: true,
+    alwaysOnTop: false
+    /* skipTaskbar: false,
+    title: 'Git status',
+    show: false,
+    frame: false,
+    disableAutoHideCursor: true,
+    titleBarStyle: 'hidden' */
   })
+  // mainWindow.hide()
   mainWindow.loadURL(`file://${__dirname}/status.html`)
 
   // Tray : Minimize to tray when close or minimise
