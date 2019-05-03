@@ -23,6 +23,7 @@ app.on('ready', _ => {
     { label: 'Commit+Push...', click: _ => mainWindow.webContents.send('commitPushRequest', 'C') },
     { label: 'Push', click: _ => mainWindow.webContents.send('pushRequest', 'D') },
     { label: 'Stage+Commit+Push...', click: _ => mainWindow.webContents.send('stageCommitPushRequest', 'E') },
+    { label: 'Test', click: _ => mainWindow.webContents.send('testRequest', 'F') },
     { label: 'Config', click: _ => mainWindow.show() },
     { label: 'Close', click: _ => { app.isQuiting = true; app.quit() } }
   ]))
@@ -72,4 +73,8 @@ app.on('ready', _ => {
 // IPC : hange the tray icon when a new status is detected in the git respository
 ipcMain.on('status-change', (event, status) => {
   tray.setImage(path.join(iconPath, icons[status]))
+})
+
+ipcMain.on('repo-name', (event, name) => {
+  tray.setToolTip(name)
 })

@@ -14,39 +14,60 @@ function isDir (dir) {
   }
 }
 
-electron.ipcRenderer.on('stageRequest', (event, message) => {
-  gitStage(document.getElementById('path-input').value)
+function updateToolTip (name) {
+  ipc.send('repo-name', name)
+}
+
+function getDir () {
+  let dir = document.getElementById('path-input').value
+  getRepoName(dir) // and updateToolTip via collback
+  // TODO : must be in a sub-process
+  return dir
+}
+
+ipc.on('stageRequest', (event, message) => {
+  gitStage(getDir())
 })
 
-electron.ipcRenderer.on('commitRequest', (event, message) => {
-  gitCommit(document.getElementById('path-input').value)
+ipc.on('commitRequest', (event, message) => {
+  gitCommit(getDir())
 })
 
-electron.ipcRenderer.on('commitPushRequest', (event, message) => {
-  gitCommit(document.getElementById('path-input').value)
-  gitPush(document.getElementById('path-input').value)
+ipc.on('commitPushRequest', (event, message) => {
+  let dir = getDir()
+  gitCommit(dir)
+  gitPush(dir)
 })
 
-electron.ipcRenderer.on('pushRequest', (event, message) => {
-  gitPush(document.getElementById('path-input').value)
+ipc.on('pushRequest', (event, message) => {
+  gitPush(getDir())
 })
 
-electron.ipcRenderer.on('stageCommitPushRequest', (event, message) => {
-  gitCommit(document.getElementById('path-input').value)
+ipc.on('stageCommitPushRequest', (event, message) => {
+  let dir = getDir()
+  gitStage(dir)
+  gitCommit(dir)
+  gitPush(dir)
 })
 
-/* function getRepoName (dir) {
-  exec('basename `git rev-parse --show-toplevel`', {
+ipc.on('testRequest', (event, message) => {
+  let dir = getDir()
+  console.log(dir)
+})
+
+function getRepoName (dir) {
+  exec('git rev-parse --show-toplevel', {
     cwd: dir
   }, (err, stdout, stderr) => {
     // Used to debug :
     console.log('err', err)
     console.log('stdout', stdout)
     console.log('stderr', stderr)
-
+    updateToolTip(stdout)
     return stdout
   })
-} */
+  return 'new name'
+}
 
 function gitCommit (dir) {
   exec('git commit -m "update"', {
@@ -163,3 +184,4 @@ removeStatus()
 checkGitStatus(document.getElementById('path-input').value)
 let timer = run()
 setUpdateTimeout(timer)
+getDir()
