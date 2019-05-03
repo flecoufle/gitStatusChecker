@@ -14,7 +14,7 @@ app.on('ready', _ => {
   tray.setToolTip('Git status')
   tray.setContextMenu(Menu.buildFromTemplate([
     { label: 'Show', click: _ => mainWindow.show() },
-    { label: 'Exit', click: _ => { app.isQuiting = true; app.quit(); } }
+    { label: 'Exit', click: _ => { app.isQuiting = true; app.quit() } }
   ]))
   tray.on('click', _ => {
     if (mainWindow.isVisible()) {
@@ -27,7 +27,7 @@ app.on('ready', _ => {
   // MainWindow : Instanciate a new window and open it
   mainWindow = new BrowserWindow({
     height: 200,
-    width: 450
+    width: 500
   })
   mainWindow.loadURL(`file://${__dirname}/status.html`)
 
