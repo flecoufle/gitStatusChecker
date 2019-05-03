@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/main.js",
   "scripts": {
-    "build": "rimraf git-checker-* && electron-packager . --platform=darwin,linux,win32 --arch=x64 --icon=app --overwrite",
+    "build": "rimraf git-checker-* && electron-packager . --platform=linux,win32 --arch=x64 --icon=app --overwrite",
     "start": "electron ."
   },
   "keywords": [],
@@ -17,5 +17,9 @@
   },
   "dependencies": {
     "eslint": "^5.16.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:flecoufle/gitStatusChecker.git"
   }
 }

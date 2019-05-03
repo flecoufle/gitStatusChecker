@@ -11,7 +11,7 @@ let icons = {clean: 'clean.png', dirty: 'dirty.png', unknown: 'unknown.png'}
 app.on('ready', _ => {
     // Tray : Initialize tray
     tray = new Tray(path.join(iconPath, icons.unknown))
-    tray.setToolTip('Change settings')
+    tray.setToolTip('Git status')
     tray.setContextMenu(Menu.buildFromTemplate([
         { label: 'Show', click: _ => mainWindow.show() },
         { label: 'Exit', click: _ => { app.isQuiting = true; app.quit(); } }
