@@ -1,7 +1,7 @@
 {
-  "name": "gitStatusChecker",
+  "name": "git-checker",
   "version": "1.0.0",
-  "description": "",
+  "description": "Git status checker",
   "main": "src/main.js",
   "scripts": {
     "build": "rimraf git-checker-* && electron-packager . --platform=linux,win32 --arch=x64 --icon=app --overwrite",
