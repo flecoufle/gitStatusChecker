@@ -24,6 +24,12 @@ app.on('ready', _ => {
     { label: 'Push', click: _ => mainWindow.webContents.send('pushRequest', 'D') },
     { label: 'Stage+Commit+Push...', click: _ => mainWindow.webContents.send('stageCommitPushRequest', 'E') },
     { label: 'Test', click: _ => mainWindow.webContents.send('testRequest', 'F') },
+    { label: 'Git',
+      click: _ => {
+        mainWindow.show()
+        mainWindow.webContents.send('commitRequest', 'B')
+      }
+    },
     { label: 'Config', click: _ => mainWindow.show() },
     { label: 'Close', click: _ => { app.isQuiting = true; app.quit() } }
   ]))

@@ -14,14 +14,108 @@ function isDir (dir) {
   }
 }
 
+function updateToolTip (name) {
+  ipc.send('repo-name', name)
+}
+
+function getDir () {
+  let dir = document.getElementById('path-input').value
+  getRepoName(dir) // and updateToolTip via collback
+  // TODO : must be in a sub-process
+  return dir
+}
+
+ipc.on('stageRequest', (event, message) => {
+  gitStage(getDir())
+})
+
+ipc.on('commitRequest', (event, message) => {
+  gitCommit(getDir())
+})
+
+ipc.on('commitPushRequest', (event, message) => {
+  let dir = getDir()
+  gitCommit(dir)
+  gitPush(dir)
+})
+
+ipc.on('pushRequest', (event, message) => {
+  gitPush(getDir())
+})
+
+ipc.on('stageCommitPushRequest', (event, message) => {
+  let dir = getDir()
+  gitStage(dir)
+  gitCommit(dir)
+  gitPush(dir)
+})
+
+ipc.on('testRequest', (event, message) => {
+  let dir = getDir()
+  console.log(dir)
+})
+
+function getRepoName (dir) {
+  exec('git rev-parse --show-toplevel', {
+    cwd: dir
+  }, (err, stdout, stderr) => {
+    // Used to debug :
+    console.log('err', err)
+    console.log('stdout', stdout)
+    console.log('stderr', stderr)
+    updateToolTip(stdout)
+    return stdout
+  })
+  return 'new name'
+}
+
+function gitCommit (dir) {
+  exec('git commit -m "update"', {
+    cwd: dir
+  }, (err, stdout, stderr) => {
+    // Used to debug :
+    console.log('err', err)
+    console.log('stdout', stdout)
+    console.log('stderr', stderr)
+
+    return err
+  })
+}
+
+function gitStage (dir) {
+  exec('git add .', {
+    cwd: dir
+  }, (err, stdout, stderr) => {
+    // Used to debug :
+    console.log('err', err)
+    console.log('stdout', stdout)
+    console.log('stderr', stderr)
+
+    return err
+  })
+}
+
+function gitPush (dir) {
+  exec('git push', {
+    cwd: dir
+  }, (err, stdout, stderr) => {
+    // Used to debug :
+    console.log('err', err)
+    console.log('stdout', stdout)
+    console.log('stderr', stderr)
+
+    return err
+  })
+}
+
 function checkGitStatus (dir) {
   exec('git status', {
     cwd: dir
   }, (err, stdout, stderr) => {
     // Used to debug :
-    // console.log('err', err);
-    // console.log('stdout', stdout);
-    // console.log('stderr', stderr);
+    console.log('err', err)
+    console.log('stdout', stdout)
+    console.log('stderr', stderr)
 
     if (err) return setStatus('unknown')
 
@@ -90,3 +184,4 @@ removeStatus()
 checkGitStatus(document.getElementById('path-input').value)
 let timer = run()
 setUpdateTimeout(timer)
+getDir()

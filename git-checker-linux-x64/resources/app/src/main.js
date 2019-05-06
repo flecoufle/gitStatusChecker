@@ -11,10 +11,21 @@ let icons = { clean: 'clean.png', dirty: 'dirty.png', unknown: 'unknown.png' }
 app.on('ready', _ => {
   // Tray : Initialize tray
   tray = new Tray(path.join(iconPath, icons.unknown))
-  tray.setToolTip('Git status')
+  tray.setToolTip('Git command')
   tray.setContextMenu(Menu.buildFromTemplate([
-    { label: 'Show', click: _ => mainWindow.show() },
-    { label: 'Exit', click: _ => { app.isQuiting = true; app.quit() } }
+    { label: 'Stage all changes',
+      click: _ => {
+        mainWindow.show()
+        mainWindow.webContents.send('stageRequest', 'A')
+      }
+    },
+    { label: 'Commit...', click: _ => mainWindow.webContents.send('commitRequest', 'B') },
+    { label: 'Commit+Push...', click: _ => mainWindow.webContents.send('commitPushRequest', 'C') },
+    { label: 'Push', click: _ => mainWindow.webContents.send('pushRequest', 'D') },
+    { label: 'Stage+Commit+Push...', click: _ => mainWindow.webContents.send('stageCommitPushRequest', 'E') },
+    { label: 'Test', click: _ => mainWindow.webContents.send('testRequest', 'F') },
+    { label: 'Config', click: _ => mainWindow.show() },
+    { label: 'Close', click: _ => { app.isQuiting = true; app.quit() } }
   ]))
   tray.on('click', _ => {
     if (mainWindow.isVisible()) {
@@ -29,13 +40,13 @@ app.on('ready', _ => {
     height: 200,
     width: 500,
     center: true,
-    alwaysOnTop: false,
-    skipTaskbar: false,
+    alwaysOnTop: false
+    /* skipTaskbar: false,
     title: 'Git status',
     show: false,
     frame: false,
     disableAutoHideCursor: true,
-    titleBarStyle: 'hidden'
+    titleBarStyle: 'hidden' */
   })
   // mainWindow.hide()
   mainWindow.loadURL(`file://${__dirname}/status.html`)
@@ -62,4 +73,8 @@ app.on('ready', _ => {
 // IPC : hange the tray icon when a new status is detected in the git respository
 ipcMain.on('status-change', (event, status) => {
   tray.setImage(path.join(iconPath, icons[status]))
+})
+
+ipcMain.on('repo-name', (event, name) => {
+  tray.setToolTip(name)
 })

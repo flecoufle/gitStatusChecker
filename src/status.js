@@ -3,8 +3,9 @@ const exec = require('child_process').exec
 const os = require('os')
 const electron = require('electron')
 const ipc = electron.ipcRenderer // inter process communication. Main process <=> Render process
+const remote = electron.remote
 
-const defaultTimeOut = 3
+const defaultTimeOut = 30
 
 function isDir (dir) {
   try {
@@ -16,6 +17,14 @@ function isDir (dir) {
 
 function updateToolTip (name) {
   ipc.send('repo-name', name)
+}
+
+function startLog () {
+  document.getElementById('log').value = '...'
+}
+
+function endLog () {
+  document.getElementById('log').value = ''
 }
 
 function getDir () {
@@ -40,7 +49,9 @@ ipc.on('commitPushRequest', (event, message) => {
 })
 
 ipc.on('pushRequest', (event, message) => {
+  document.getElementById('log').value = '...'
   gitPush(getDir())
+  // document.getElementById('log').value = ''
 })
 
 ipc.on('stageCommitPushRequest', (event, message) => {
@@ -56,7 +67,8 @@ ipc.on('testRequest', (event, message) => {
 })
 
 function getRepoName (dir) {
-  exec('git rev-parse --show-toplevel', {
+  startLog()
+  exec('git remote get-url origin | xargs basename | cut -f1 -d"."', {
     cwd: dir
   }, (err, stdout, stderr) => {
     // Used to debug :
@@ -64,12 +76,14 @@ function getRepoName (dir) {
     console.log('stdout', stdout)
     console.log('stderr', stderr)
     updateToolTip(stdout)
+    endLog()
     return stdout
   })
   return 'new name'
 }
 
 function gitCommit (dir) {
+  startLog()
   exec('git commit -m "update"', {
     cwd: dir
   }, (err, stdout, stderr) => {
@@ -78,11 +92,14 @@ function gitCommit (dir) {
     console.log('stdout', stdout)
     console.log('stderr', stderr)
 
+    remote.getCurrentWindow().hide()
+    endLog()
     return err
   })
 }
 
 function gitStage (dir) {
+  startLog()
   exec('git add .', {
     cwd: dir
   }, (err, stdout, stderr) => {
@@ -91,11 +108,13 @@ function gitStage (dir) {
     console.log('stdout', stdout)
     console.log('stderr', stderr)
 
+    endLog()
     return err
   })
 }
 
 function gitPush (dir) {
+  startLog()
   exec('git push', {
     cwd: dir
   }, (err, stdout, stderr) => {
@@ -104,11 +123,13 @@ function gitPush (dir) {
     console.log('stdout', stdout)
     console.log('stderr', stderr)
 
+    endLog()
     return err
   })
 }
 
 function checkGitStatus (dir) {
+  startLog()
   exec('git status', {
     cwd: dir
   }, (err, stdout, stderr) => {
@@ -121,6 +142,7 @@ function checkGitStatus (dir) {
 
     if (/nothing to commit/.test(stdout)) return setStatus('clean')
 
+    endLog()
     return setStatus('dirty')
   })
 }
